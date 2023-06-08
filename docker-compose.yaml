@@ -1,0 +1,30 @@
+version: "2"
+services:
+  influxdb:  # This names the service we are about to define
+    container_name: influxdb
+    image: influxdb:latest
+    ports:
+      - "8086:8086"
+    volumes:
+      - ./influx/influxdb:/var/lib/influxdb2
+      - ./influx/config:/etc/influxdb
+    restart: always
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana:/var/lib/grafana     
+    links:
+      - influxdb
+    user: 0:0
+    restart: always
+  telegraf:
+    container_name: telegraf
+    image: telegraf:latest
+    network_mode: "host"
+    volumes:
+      -  ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: always
